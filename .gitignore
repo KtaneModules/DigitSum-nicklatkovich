@@ -27,7 +27,7 @@ obj/
 Models/*
 
 # Digit Sum
-!Assets/Digit Sum.meta
-!Assets/Digit Sum/
+!Assets/DigitSum.meta
+!Assets/DigitSum/
 !Manual/img/Digit Sum/
 !Manual/img/Component/Digit Sum.svg
