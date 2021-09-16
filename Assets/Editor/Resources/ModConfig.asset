@@ -11,10 +11,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 615501dbe4f3fe94fbf4b564abb10237, type: 3}
   m_Name: ModConfig
   m_EditorClassIdentifier: 
-  id: 
-  title: 
-  author: 
-  description: 
-  version: 
+  id: digit_sum
+  title: Digit Sum
+  author: NickLatkovich
+  description: Find the minimum number that must be added to the original in order
+    to achieve the required sum of the digits of the resulting number.
+  version: 1.0.0
   outputFolder: build
-  previewImage: {fileID: 0}
+  previewImage: {fileID: 2800000, guid: 8e6ce70de229917438ca1c12ef75c823, type: 3}

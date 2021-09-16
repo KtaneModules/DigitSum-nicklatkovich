@@ -34,14 +34,14 @@ public class DigitSumModule : ModuleScript {
 		x = DigitsToNumber(xDigits);
 		a = xDigits.Sum() + 1;
 		d = Random.Range(0, a);
-		Log("X = {0}", new[] { x });
-		Log("A = {0}", new[] { a });
-		Log("D = {0}", new[] { d });
+		Log("X = {0}", x.ToString());
+		Log("A = {0}", a.ToString());
+		Log("D = {0}", d.ToString());
 		expectedSum = CalculateExpectedSum(x, d);
-		Log("Expected sum = {0}", new[] { expectedSum });
+		Log("Expected sum = {0}", expectedSum.ToString());
 		expectedZ = expectedSum - x;
 		if (expectedZ < 0) expectedZ += MODULER;
-		Log("Z = {0}", new[] { expectedZ });
+		Log("Z = {0}", expectedZ.ToString());
 		List<KeyComponent> keys = new List<KeyComponent>();
 		for (int i = 0; i < 10; i++) {
 			int digit = (i + 1) % 10;
@@ -72,7 +72,7 @@ public class DigitSumModule : ModuleScript {
 		int newK = d - y;
 		newK = (Mathf.Abs(newK * a) + newK) % a;
 		if (this.k != newK && !IsSolved) {
-			Log("K updated to {0} (Y = {1} = 19 * {2} + 2 * {3})", new string[] { newK.ToString(), y.ToString(), minutesLeft.ToString(), firstDigits.ToString() });
+			Log("K updated to {0} (Y = {1} = 19 * {2} + 2 * {3})", newK.ToString(), y.ToString(), minutesLeft.ToString(), firstDigits.ToString());
 		}
 		this.k = newK;
 	}
@@ -96,13 +96,13 @@ public class DigitSumModule : ModuleScript {
 			3 * startingTimeInMinutes,
 		};
 		this.staticY = staticYNums.Sum();
-		Log("Static Y = {0}", new[] { staticY });
-		Log("13 * {0} batteries", new[] { batteries });
-		Log("17 * {0} modules", new[] { modules });
-		Log("5 * {0} DVI ports", new[] { dviPorts });
-		Log("7 * {0} unlit indicators", new[] { unlitIndicators });
-		Log("11 * {0} (last digit of serial number)", new[] { lastSerialNumberDigit });
-		Log("3 * {0} starting minutes", new[] { startingTimeInMinutes });
+		Log("Static Y = {0}", staticY.ToString());
+		Log("13 * {0} batteries", batteries.ToString());
+		Log("17 * {0} modules", modules.ToString());
+		Log("5 * {0} DVI ports", dviPorts.ToString());
+		Log("7 * {0} unlit indicators", unlitIndicators.ToString());
+		Log("11 * {0} (last digit of serial number)", lastSerialNumberDigit.ToString());
+		Log("3 * {0} starting minutes", startingTimeInMinutes.ToString());
 	}
 
 	private void UpdateKDisplay() {
@@ -115,11 +115,15 @@ public class DigitSumModule : ModuleScript {
 
 	private void OnDigitPressed(int digit) {
 		if (!IsActive || IsSolved) return;
-		z = (z * 10 + digit) % MODULER;
+		this.PlaySound(this.transform, KMSoundOverride.SoundEffect.ButtonPress);
+		int newZ = z * 10 + digit;
+		if (newZ >= MODULER) return;
+		z = newZ;
 	}
 
 	private void OnCancelPressed() {
 		if (!IsActive || IsSolved) return;
+		this.PlaySound(this.transform, KMSoundOverride.SoundEffect.ButtonPress);
 		z = 0;
 	}
 
@@ -127,10 +131,10 @@ public class DigitSumModule : ModuleScript {
 		if (!IsActive || IsSolved) return;
 		if (z == expectedZ) {
 			this.Log("Module solved");
+			this.PlaySound(this.transform, KMSoundOverride.SoundEffect.CorrectChime);
 			this.Solve();
 		} else {
-			this.Log(string.Format("{0} submitted. {1} expected. Strike!", this.z, this.expectedZ));
-			this.Log("{0} submitted. {1} expected. Strike!", new string[] { this.z.ToString(), this.expectedZ.ToString() });
+			this.Log("{0} submitted. {1} expected. Strike!", this.z.ToString(), this.expectedZ.ToString());
 			this.Strike();
 		}
 	}
