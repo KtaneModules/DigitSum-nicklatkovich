@@ -108,6 +108,7 @@ GameObject:
   - component: {fileID: 114583905397716832}
   - component: {fileID: 114928008853757968}
   - component: {fileID: 114085461693948024}
+  - component: {fileID: 114792945811496706}
   m_Layer: 0
   m_Name: DigitSum
   m_TagString: Untagged
@@ -1393,6 +1394,19 @@ MonoBehaviour:
   BombInfo: {fileID: 114583905397716832}
   KeyPrefab: {fileID: 114410553530366900, guid: 7e349e3ce268aeb4397a9ed088ec1182,
     type: 2}
+  DigitsKeys:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  ClearKey: {fileID: 0}
+  SubmitKey: {fileID: 0}
 --- !u!114 &114165393851661020
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1522,6 +1536,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShaderNames:
   - GUI/KT 3D Text Diffuse
+--- !u!114 &114792945811496706
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1233798829585024}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08040e72d9b684844b0f31c2d2af49b7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TwitchHelpMessage: '"!{0} 123456" - submit an answer'
+  TwitchManualCode: 
+  TwitchAbandonModule: []
 --- !u!114 &114804620277352226
 MonoBehaviour:
   m_ObjectHideFlags: 1

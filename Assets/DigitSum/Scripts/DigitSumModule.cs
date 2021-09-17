@@ -18,42 +18,50 @@ public class DigitSumModule : ModuleScript {
 	public KMBombInfo BombInfo;
 	public KeyComponent KeyPrefab;
 
-	private int x;
-	private int a;
-	private int d;
-	private int expectedSum;
-	private int expectedZ;
-	private int staticY;
+	[HideInInspector] public KMSelectable[] DigitsKeys = new KMSelectable[10];
+	[HideInInspector] public KMSelectable ClearKey;
+	[HideInInspector] public KMSelectable SubmitKey;
 
-	private int _z = 0; public int z { get { return _z; } private set { if (this.z == value) return; this._z = value; UpdateZDisplay(); } }
-	private int _k = -1; public int k { get { return _k; } private set { if (this.k == value) return; this._k = value; UpdateKDisplay(); } }
+	public int ExpectedZ { get; private set; }
+
+	private int X;
+	private int A;
+	private int D;
+	private int ExpectedSum;
+	private int StaticY;
+
+	private int _z = 0; public int Z { get { return _z; } private set { if (this.Z == value) return; this._z = value; UpdateZDisplay(); } }
+	private int _k = -1; public int K { get { return _k; } private set { if (this.K == value) return; this._k = value; UpdateKDisplay(); } }
 
 	private void Start() {
 		int[] xDigits = Enumerable.Repeat(0, DIGITS_COUNT).Select(_ => Random.Range(0, 10)).ToArray();
 		while (xDigits.Sum() < MIN_DIGIT_SUM) IncreaseRandomDigit(xDigits);
-		x = DigitsToNumber(xDigits);
-		a = xDigits.Sum() + 1;
-		d = Random.Range(0, a);
-		Log("X = {0}", x.ToString());
-		Log("A = {0}", a.ToString());
-		Log("D = {0}", d.ToString());
-		expectedSum = CalculateExpectedSum(x, d);
-		Log("Expected sum = {0}", expectedSum.ToString());
-		expectedZ = expectedSum - x;
-		if (expectedZ < 0) expectedZ += MODULER;
-		Log("Z = {0}", expectedZ.ToString());
+		X = DigitsToNumber(xDigits);
+		A = xDigits.Sum() + 1;
+		D = Random.Range(0, A);
+		Log("X = {0}", X.ToString());
+		Log("A = {0}", A.ToString());
+		Log("D = {0}", D.ToString());
+		ExpectedSum = CalculateExpectedSum(X, D);
+		Log("Expected sum = {0}", ExpectedSum.ToString());
+		ExpectedZ = ExpectedSum - X;
+		if (ExpectedZ < 0) ExpectedZ += MODULER;
+		Log("Z = {0}", ExpectedZ.ToString());
 		List<KeyComponent> keys = new List<KeyComponent>();
 		for (int i = 0; i < 10; i++) {
 			int digit = (i + 1) % 10;
 			KeyComponent key = CreateKey(new Vector2Int(i % 5, i / 5), digit.ToString(), KeyComponent.DEFAULT_COLOR);
 			key.Selectable.OnInteract += () => { OnDigitPressed(digit); return false; };
+			DigitsKeys[digit] = key.Selectable;
 			keys.Add(key);
 		}
 		KeyComponent clearKey = CreateKey(new Vector2Int(5, 0), "<", Color.red);
 		clearKey.Selectable.OnInteract += () => { OnCancelPressed(); return false; };
+		ClearKey = clearKey.Selectable;
 		keys.Add(clearKey);
 		KeyComponent submitKey = CreateKey(new Vector2Int(5, 1), "S", Color.green);
 		submitKey.Selectable.OnInteract += () => { OnSubmitPressed(); return false; };
+		SubmitKey = submitKey.Selectable;
 		keys.Add(submitKey);
 		Selectable.Children = keys.Select(k => k.Selectable).ToArray();
 		Selectable.UpdateChildren();
@@ -65,21 +73,21 @@ public class DigitSumModule : ModuleScript {
 		int[] codes = BombInfo.GetTwoFactorCodes().ToArray();
 		int firstDigits = codes.Select(code => int.Parse(code.ToString()[0].ToString())).Sum();
 		int y = new[] {
-			staticY,
+			StaticY,
 			19 * minutesLeft,
 			2 * firstDigits,
 		}.Sum();
-		int newK = d - y;
-		newK = (Mathf.Abs(newK * a) + newK) % a;
-		if (this.k != newK && !IsSolved) {
+		int newK = D - y;
+		newK = (Mathf.Abs(newK * A) + newK) % A;
+		if (this.K != newK && !IsSolved) {
 			Log("K updated to {0} (Y = {1} = 19 * {2} + 2 * {3})", newK.ToString(), y.ToString(), minutesLeft.ToString(), firstDigits.ToString());
 		}
-		this.k = newK;
+		this.K = newK;
 	}
 
 	public override void OnActivate() {
 		base.OnActivate();
-		XDisplay.text = x.ToString().PadLeft(6, ' ');
+		XDisplay.text = X.ToString().PadLeft(6, ' ');
 		UpdateZDisplay();
 		int batteries = BombInfo.GetBatteryCount();
 		int modules = BombInfo.GetModuleIDs().Count;
@@ -95,8 +103,8 @@ public class DigitSumModule : ModuleScript {
 			11 * lastSerialNumberDigit,
 			3 * startingTimeInMinutes,
 		};
-		this.staticY = staticYNums.Sum();
-		Log("Static Y = {0}", staticY.ToString());
+		this.StaticY = staticYNums.Sum();
+		Log("Static Y = {0}", StaticY.ToString());
 		Log("13 * {0} batteries", batteries.ToString());
 		Log("17 * {0} modules", modules.ToString());
 		Log("5 * {0} DVI ports", dviPorts.ToString());
@@ -106,35 +114,35 @@ public class DigitSumModule : ModuleScript {
 	}
 
 	private void UpdateKDisplay() {
-		KDisplay.text = k.ToString().PadLeft(2, ' ');
+		KDisplay.text = K.ToString().PadLeft(2, ' ');
 	}
 
 	private void UpdateZDisplay() {
-		ZDisplay.text = z.ToString().PadLeft(6, ' ');
+		ZDisplay.text = Z.ToString().PadLeft(6, ' ');
 	}
 
-	private void OnDigitPressed(int digit) {
+	public void OnDigitPressed(int digit) {
 		if (!IsActive || IsSolved) return;
 		this.PlaySound(this.transform, KMSoundOverride.SoundEffect.ButtonPress);
-		int newZ = z * 10 + digit;
+		int newZ = Z * 10 + digit;
 		if (newZ >= MODULER) return;
-		z = newZ;
+		Z = newZ;
 	}
 
-	private void OnCancelPressed() {
+	public void OnCancelPressed() {
 		if (!IsActive || IsSolved) return;
 		this.PlaySound(this.transform, KMSoundOverride.SoundEffect.ButtonPress);
-		z = 0;
+		Z = 0;
 	}
 
-	private void OnSubmitPressed() {
+	public void OnSubmitPressed() {
 		if (!IsActive || IsSolved) return;
-		if (z == expectedZ) {
+		if (Z == ExpectedZ) {
 			this.Log("Module solved");
 			this.PlaySound(this.transform, KMSoundOverride.SoundEffect.CorrectChime);
 			this.Solve();
 		} else {
-			this.Log("{0} submitted. {1} expected. Strike!", this.z.ToString(), this.expectedZ.ToString());
+			this.Log("{0} submitted. {1} expected. Strike!", this.Z.ToString(), this.ExpectedZ.ToString());
 			this.Strike();
 		}
 	}
